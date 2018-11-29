@@ -4,4 +4,7 @@
     <string name="notGrantedPermMessage">Вы не дали необходимых разрешений. Приложение завершает работу.</string>
     <string name="OkLabel">OK</string>
     <string name="requestPermissionMessage">Приложению необходим доступ к внешнему хранилищу, что бы сохранить снимок.</string>
+    <string name="take_photo_label">Сделать снимок</string>
+    <string name="recognize">Распознать</string>
+    <string name="recognition_error">Ошибка распознования</string>
 </resources>
