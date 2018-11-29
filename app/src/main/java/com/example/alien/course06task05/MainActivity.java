@@ -23,6 +23,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.document.FirebaseVisionCloudDocumentRecognizerOptions;
+import com.google.firebase.ml.vision.document.FirebaseVisionDocumentText;
+import com.google.firebase.ml.vision.document.FirebaseVisionDocumentTextRecognizer;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 import com.squareup.picasso.Picasso;
@@ -30,6 +33,7 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -64,19 +68,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void recognize() {
         try {
-            FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(((BitmapDrawable) mPreviewImageView.getDrawable()).getBitmap());
-            FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
-            Task<FirebaseVisionText> result =
-                    detector.processImage(image)
-                            .addOnSuccessListener(firebaseVisionText ->
-                                    mResultTextView.setText(firebaseVisionText.getText())
-                            )
-                            .addOnFailureListener(
-                                    e -> {
-                                        e.printStackTrace();
-                                        Toast.makeText(this, R.string.recognition_error, Toast.LENGTH_SHORT).show();
-                                    });
+            Uri uri = Uri.parse("file://" + mCurrentPhotoPath);
+            FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(this, uri);
 
+            FirebaseVisionCloudDocumentRecognizerOptions options =
+                    new FirebaseVisionCloudDocumentRecognizerOptions.Builder()
+                            .setLanguageHints(Arrays.asList("en", "ru"))
+                            .build();
+            FirebaseVisionDocumentTextRecognizer detector = FirebaseVision.getInstance()
+                    .getCloudDocumentTextRecognizer(options);
+            detector.processImage(image)
+                    .addOnSuccessListener(result -> {
+                        mResultTextView.setText(result.getText());
+                    })
+                    .addOnFailureListener(e -> {
+                        e.printStackTrace();
+                        Toast.makeText(this, R.string.recognition_error, Toast.LENGTH_SHORT).show();
+                    });
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
