@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Course06Task05</string>
+    <string name="permDialogTitle">Запрос разрешений</string>
+    <string name="notGrantedPermMessage">Вы не дали необходимых разрешений. Приложение завершает работу.</string>
+    <string name="OkLabel">OK</string>
+    <string name="requestPermissionMessage">Приложению необходим доступ к внешнему хранилищу, что бы сохранить снимок.</string>
 </resources>
