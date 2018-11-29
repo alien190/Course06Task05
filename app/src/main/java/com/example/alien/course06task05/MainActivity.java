@@ -68,23 +68,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void recognize() {
         try {
-            Uri uri = Uri.parse("file://" + mCurrentPhotoPath);
-            FirebaseVisionImage image = FirebaseVisionImage.fromFilePath(this, uri);
+            FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(((BitmapDrawable) mPreviewImageView.getDrawable()).getBitmap());
+            FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance().getOnDeviceTextRecognizer();
+            Task<FirebaseVisionText> result =
+                    detector.processImage(image)
+                            .addOnSuccessListener(firebaseVisionText ->
+                                    mResultTextView.setText(firebaseVisionText.getText())
+                            )
+                            .addOnFailureListener(
+                                    e -> {
+                                        e.printStackTrace();
+                                        Toast.makeText(this, R.string.recognition_error, Toast.LENGTH_SHORT).show();
+                                    });
 
-            FirebaseVisionCloudDocumentRecognizerOptions options =
-                    new FirebaseVisionCloudDocumentRecognizerOptions.Builder()
-                            .setLanguageHints(Arrays.asList("en", "ru"))
-                            .build();
-            FirebaseVisionDocumentTextRecognizer detector = FirebaseVision.getInstance()
-                    .getCloudDocumentTextRecognizer(options);
-            detector.processImage(image)
-                    .addOnSuccessListener(result -> {
-                        mResultTextView.setText(result.getText());
-                    })
-                    .addOnFailureListener(e -> {
-                        e.printStackTrace();
-                        Toast.makeText(this, R.string.recognition_error, Toast.LENGTH_SHORT).show();
-                    });
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
